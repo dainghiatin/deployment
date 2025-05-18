@@ -5,7 +5,7 @@
 
 services:
   strapi:
-    image: jeyluu/strapi-svc-dnt:release-0.1
+    image: jeyluu/strapi-svc-dnt:release-0.2
     environment:
       - NODE_ENV=production
       - DATABASE_CLIENT=mysql
@@ -27,32 +27,22 @@ services:
     # expose:
     #   - "1337"  # Expose to other containers but not to host
     restart: always
-    # depends_on:
-    #   mysql:
-    #     condition: service_healthy
+
+  # customer-journey-web:
+  #   image: jeyluu/customer-journey-web:dev-0.1
+  #   environment:
+  #     - VITE_API_URL=http://ec2-52-91-99-45.compute-1.amazonaws.com/api
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - strapi
+  #   restart: always
 
   nginx:
-    image: jeyluu/nginx:dev-0.5.1
+    image: jeyluu/nginx:dev-0.5.4
     ports:
       - "80:80"
     depends_on:
       - strapi
     restart: always
 
-  # mysql:
-  #   image: 'bitnami/mysql:latest'
-  #   environment:
-  #     - ALLOW_EMPTY_PASSWORD=yes
-  #     - MYSQL_DATABASE=strapi
-  #   ports:
-  #     - "3306:3306"  # Forward MySQL port to localhost
-  #   volumes:
-  #     - mysql_data:/bitnami/mysql/data
-  #   healthcheck:
-  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
-volumes:
-  mysql_data:
