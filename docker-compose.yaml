@@ -1,4 +1,4 @@
-version: '2'
+version: '3.3'
 
 networks:
   app-tier:
@@ -6,46 +6,52 @@ networks:
 
 services:
   strapi:
-    image: jeyluu/strapi-svc-dnt:dev-0.2
+    image: jeyluu/strapi-svc-dnt:release-1.0.7
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - DATABASE_CLIENT=mysql
-      - DATABASE_HOST=mysql
-      - DATABASE_PORT=3306
-      - DATABASE_NAME=strapi
-      - DATABASE_USERNAME=root
-      - DATABASE_PASSWORD=
+      - DATABASE_HOST=mysql-3ea9152-jeyluu-1270.g.aivencloud.com
+      - DATABASE_PORT=26826
+      - DATABASE_NAME=defaultdb
+      - DATABASE_USERNAME=avnadmin
+      - DATABASE_PASSWORD=AVNS_ilVw0peh8awyeKT1Qcf
       - JWT_SECRET=your-super-secret-key
       - ADMIN_JWT_SECRET=your-super-secret-key
       - TRANSFER_TOKEN_SALT=your-super-secret-key
       - APP_KEYS=your-super-secret-key
+      - PUBLIC_URL=http://27.71.27.147:1337
+      - CLOUDINARY_NAME=dnt-cloud
+      - CLOUDINARY_KEY=734211622641529
+      - CLOUDINARY_SECRET=wgHEUdibkkucRSG9Tc5qcvtdRvc
+      - CLOUDINARY_FOLDER=strapi-uploads
+      - DATABASE_SSL=true
+      - DATABASE_SSL_CAPATH=/app/ca.pem
+      - DATABASE_SSL_REJECT_UNAUTHORIZED=false
+
     ports:
       - "1337:1337"
-    volumes:
-      - ./strapi-cms-service:/app
-      - /app/node_modules
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
       - app-tier
 
-  mysql:
-    image: 'bitnami/mysql:latest'
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - MYSQL_DATABASE=strapi
-    networks:
-      - app-tier
-    ports:
-      - "3306:3306"  # Forward MySQL port to localhost
-    volumes:
-      - mysql_data:/bitnami/mysql/data
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # mysql:
+  #   image: bitnami/mysql:latest
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #     - MYSQL_DATABASE=strapi
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/bitnami/mysql/data
+  #   networks:
+  #     - app-tier
+
+  # nginx:
+  #   image: jeyluu/nginx:dev-0.5.4
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - strapi
+  #   restart: always
 
 volumes:
   mysql_data:
